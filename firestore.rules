@@ -7,7 +7,10 @@ service cloud.firestore {
 
     // Update the admin email below to match AUTH_ROLES.ADMIN_EMAILS in js/firebase-config.js
     function isAdmin() {
-      return isSignedIn() && request.auth.token.email == "admin@tuition.lms";
+      return isSignedIn() && (
+        request.auth.token.email == "admin@tuition.lms" ||
+        request.auth.token.email == "udana123@gmail.com"
+      );
     }
 
     match /subjects/{subjectId} {
