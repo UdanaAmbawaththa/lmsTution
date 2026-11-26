@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tuition LMS — Learning Management System</title>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <!-- ==================== AUTHENTICATION VIEW ==================== -->
+    <section id="auth-view" class="auth-layout">
+        <div class="auth-shell">
+            <div class="auth-brand-panel">
+                <div class="brand-mark">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                    </svg>
+                </div>
+                <span id="auth-mode-badge" class="mode-pill">Digital Learning Portal</span>
+                <h1>Tuition LMS</h1>
+                <p class="auth-tagline">
+                    Industry-standard digital classroom &amp; study resource hub for structured tuition batches.
+                </p>
+                <ul class="auth-highlights">
+                    <li>
+                        <span class="dot"></span>
+                        <span><strong>Students:</strong> Instant password-protected access to lecture notes, tutes &amp; PDF downloads.</span>
+                    </li>
+                    <li>
+                        <span class="dot"></span>
+                        <span><strong>Administrators:</strong> Full publishing suite, subject organization &amp; dual-panel control.</span>
+                    </li>
+                    <li>
+                        <span class="dot"></span>
+                        <span><strong>Study Resources:</strong> Organized by subject and batch with built-in PDF preview and instant download.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="auth-card">
+                <div class="auth-card-top">
+                    <div class="role-tabs" role="tablist" aria-label="Login role">
+                        <button type="button" class="role-tab active" data-login-role="student" role="tab" aria-selected="true">
+                            Student Access
+                        </button>
+                        <button type="button" class="role-tab" data-login-role="admin" role="tab" aria-selected="false">
+                            Admin Login
+                        </button>
+                    </div>
+                    <button type="button" id="auth-theme-toggle" class="icon-btn" title="Toggle theme" aria-label="Toggle dark or light theme">
+                        <span class="theme-icon-sun">&#9728;</span>
+                        <span class="theme-icon-moon">&#9790;</span>
+                    </button>
+                </div>
+
+                <!-- Student Password-Only Form -->
+                <form id="student-login-form" class="auth-form" autocomplete="off">
+                    <div class="form-intro">
+                        <h2>Student Portal</h2>
+                        <p>Enter your class access password to view and download tuition PDFs.</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="student-password">Student Access Password</label>
+                        <div class="password-field">
+                            <input
+                                type="password"
+                                id="student-password"
+                                placeholder="Enter student password"
+                                required
+                            />
+                            <button type="button" class="toggle-vis-btn" data-target="student-password" aria-label="Show or hide password">Show</button>
+                        </div>
+                    </div>
+                    <p id="student-login-error" class="form-error hidden"></p>
+                    <button type="submit" class="btn btn-primary btn-block" id="student-login-btn">
+                        Enter Student Panel
+                    </button>
+                </form>
+
+                <!-- Admin Authenticated Form -->
+                <form id="admin-login-form" class="auth-form hidden" autocomplete="off">
+                    <div class="form-intro">
+                        <h2>Administrator Sign In</h2>
+                        <p>Authenticate to manage materials and access both Admin &amp; Student panels.</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-email">Admin Email</label>
+                        <input
+                            type="email"
+                            id="admin-email"
+                            placeholder="admin@tuition.lms"
+                            required
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-password">Admin Password</label>
+                        <div class="password-field">
+                            <input
+                                type="password"
+                                id="admin-password"
+                                placeholder="Enter admin password"
+                                required
+                            />
+                            <button type="button" class="toggle-vis-btn" data-target="admin-password" aria-label="Show or hide password">Show</button>
+                        </div>
+                    </div>
+                    <p id="admin-login-error" class="form-error hidden"></p>
+                    <button type="submit" class="btn btn-primary btn-block" id="admin-login-btn">
+                        Sign In to Admin &amp; Student Panels
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+        <footer class="site-footer">
+            <span>&copy; <span class="current-year">2026</span> Tuition LMS. All rights reserved.</span>
+            <span class="footer-credit">Created by <strong>Udana Ambawaththa</strong></span>
+        </footer>
+    </section>
+
+    <!-- ==================== AUTHENTICATED APP SHELL ==================== -->
+    <div id="app-shell" class="app-shell hidden">
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="brand-inline">
+                    <div class="brand-mark-sm">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="brand-title">Tuition LMS</span>
+                        <span id="backend-status-text" class="backend-sub">Learning Portal</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin-Only Dual-Panel Switcher -->
+            <nav id="admin-panel-switcher" class="panel-switcher hidden" aria-label="Workspace panels">
+                <button type="button" class="switcher-btn active" data-panel="admin">
+                    Admin Panel
+                </button>
+                <button type="button" class="switcher-btn" data-panel="student">
+                    Student Panel
+                </button>
+            </nav>
+
+            <div class="topbar-right">
+                <span id="user-role-badge" class="role-badge">Student</span>
+                <button type="button" id="app-theme-toggle" class="icon-btn" title="Toggle theme" aria-label="Toggle dark or light theme">
+                    <span class="theme-icon-sun">&#9728;</span>
+                    <span class="theme-icon-moon">&#9790;</span>
+                </button>
+                <button type="button" id="logout-btn" class="btn btn-outline btn-sm">
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- ==================== STUDENT PANEL ==================== -->
+            <section id="student-panel" class="panel-view hidden">
+                <div class="page-header">
+                    <div>
+                        <h1>Student Learning Portal</h1>
+                        <p>Browse lecture notes, tutorial sheets, and download official class PDFs.</p>
+                    </div>
+                    <div class="header-actions" id="student-admin-shortcut-wrap"></div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Available Materials</span>
+                        <strong id="stu-stat-total" class="stat-value">0</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Active Subjects</span>
+                        <strong id="stu-stat-subjects" class="stat-value">0</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Total PDF Downloads</span>
+                        <strong id="stu-stat-downloads" class="stat-value">0</strong>
+                    </div>
+                </div>
+
+                <div class="toolbar-card">
+                    <div class="search-box">
+                        <input
+                            type="search"
+                            id="student-search"
+                            placeholder="Search by title, topic, subject, or description..."
+                        />
+                    </div>
+                    <div class="filter-controls">
+                        <select id="student-grade-filter" aria-label="Filter by grade or batch">
+                            <option value="all">All Batches / Grades</option>
+                        </select>
+                        <select id="student-sort" aria-label="Sort materials">
+                            <option value="newest">Newest First</option>
+                            <option value="title">Title (A–Z)</option>
+                            <option value="downloads">Most Downloaded</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="student-subject-pills" class="subject-pills" role="group" aria-label="Filter by subject"></div>
+
+                <div id="student-materials-grid" class="materials-grid"></div>
+                <div id="student-empty-state" class="empty-state hidden">
+                    <h3>No learning materials found</h3>
+                    <p>Try clearing your search or switching subject filters.</p>
+                </div>
+            </section>
+
+            <!-- ==================== ADMIN PANEL ==================== -->
+            <section id="admin-panel" class="panel-view hidden">
+                <div class="page-header">
+                    <div>
+                        <h1>Administrative Control Panel</h1>
+                        <p>Publish tuition PDFs, organize subjects, and preview the Student Panel anytime.</p>
+                    </div>
+                    <div class="header-actions">
+                        <button type="button" id="quick-switch-student-btn" class="btn btn-secondary">
+                            Open Student Panel &rarr;
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-grid stats-grid-4">
+                    <div class="stat-card">
+                        <span class="stat-label">Published PDFs</span>
+                        <strong id="adm-stat-total" class="stat-value">0</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Subjects</span>
+                        <strong id="adm-stat-subjects" class="stat-value">0</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Total Downloads</span>
+                        <strong id="adm-stat-downloads" class="stat-value">0</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Database Mode</span>
+                        <strong id="adm-stat-mode" class="stat-value stat-value-sm">Local Demo</strong>
+                    </div>
+                </div>
+
+                <div class="admin-subtabs" role="tablist">
+                    <button type="button" class="subtab-btn active" data-admin-tab="publish">
+                        + Publish Material
+                    </button>
+                    <button type="button" class="subtab-btn" data-admin-tab="manage">
+                        Manage Materials
+                    </button>
+                    <button type="button" class="subtab-btn" data-admin-tab="settings">
+                        Subjects &amp; Access
+                    </button>
+                </div>
+
+                <!-- Tab 1: Publish Material -->
+                <div id="admin-tab-publish" class="admin-tab-content">
+                    <form id="publish-form" class="card publish-card">
+                        <div class="card-header">
+                            <h2>Publish New Learning Material</h2>
+                            <p>Create typed notes and learning content for your students.</p>
+                        </div>
+
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="mat-title">Material Title *</label>
+                                <input type="text" id="mat-title" placeholder="e.g., Integration Techniques Tute 05" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="mat-subject">Subject *</label>
+                                <select id="mat-subject" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="mat-grade">Grade / Batch *</label>
+                                <input type="text" id="mat-grade" placeholder="e.g., A/L Batch 2026" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="mat-topic">Unit / Topic</label>
+                                <input type="text" id="mat-topic" placeholder="e.g., Unit 06: Integral Calculus" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="mat-description">Description / Study Instructions</label>
+                            <textarea id="mat-description" rows="3" placeholder="Brief summary of contents, homework instructions, or exam tips..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="mat-typing">Typing / Notes *</label>
+                            <textarea id="mat-typing" rows="8" placeholder="Type or paste lecture notes, instructions, or study content here..." required></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="reset" id="publish-reset-btn" class="btn btn-outline">Clear Form</button>
+                            <button type="submit" id="publish-submit-btn" class="btn btn-primary">Publish Material</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tab 2: Manage Materials -->
+                <div id="admin-tab-manage" class="admin-tab-content hidden">
+                    <div class="card">
+                        <div class="table-toolbar">
+                            <h2>Published Learning Materials</h2>
+                            <input type="search" id="admin-manage-search" placeholder="Filter materials..." class="compact-search" />
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title &amp; Topic</th>
+                                        <th>Subject</th>
+                                        <th>Batch</th>
+                                        <th>Source</th>
+                                        <th>Downloads</th>
+                                        <th>Published</th>
+                                        <th class="text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-materials-tbody"></tbody>
+                            </table>
+                        </div>
+                        <div id="admin-empty-state" class="empty-state hidden">
+                            <h3>No materials published yet</h3>
+                            <p>Switch to the "Publish Material" tab to upload your first PDF.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Subjects & Access -->
+                <div id="admin-tab-settings" class="admin-tab-content hidden">
+                    <div class="settings-grid">
+                        <div class="card">
+                            <h2>Manage Subjects</h2>
+                            <p class="muted">Subjects appear in the publishing form and student filter pills.</p>
+                            <form id="add-subject-form" class="inline-form">
+                                <input type="text" id="new-subject-name" placeholder="e.g., Biology" required />
+                                <button type="submit" class="btn btn-primary">Add Subject</button>
+                            </form>
+                            <ul id="admin-subjects-list" class="subject-manage-list"></ul>
+                        </div>
+
+                        <div class="card">
+                            <h2>Access &amp; Firebase Configuration</h2>
+                            <div id="settings-mode-info" class="settings-info-box"></div>
+                            <form id="demo-student-pass-form" class="hidden">
+                                <div class="form-group">
+                                    <label for="new-demo-student-pass">Update Demo Student Password</label>
+                                    <input type="text" id="new-demo-student-pass" placeholder="Enter new student password" required minlength="4" />
+                                </div>
+                                <button type="submit" class="btn btn-secondary">Save Student Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <span>&copy; <span class="current-year">2026</span> Tuition LMS. All rights reserved.</span>
+            <span class="footer-credit">Created by <strong>Udana Ambawaththa</strong></span>
+        </footer>
+    </div>
+
+    <!-- ==================== PDF PREVIEW MODAL ==================== -->
+    <div id="pdf-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="pdf-modal-title">
+        <div class="modal-backdrop" data-close-modal="pdf-modal"></div>
+        <div class="modal-dialog modal-xl">
+            <div class="modal-header">
+                <div>
+                    <h3 id="pdf-modal-title">PDF Preview</h3>
+                    <small id="pdf-modal-meta" class="muted"></small>
+                </div>
+                <div class="modal-header-actions">
+                    <button type="button" id="pdf-modal-download-btn" class="btn btn-primary btn-sm">Download PDF</button>
+                    <button type="button" class="icon-btn" data-close-modal="pdf-modal" aria-label="Close preview">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body modal-body-pdf">
+                <iframe id="pdf-preview-frame" title="PDF Document Preview"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== EDIT MATERIAL MODAL ==================== -->
+    <div id="edit-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+        <div class="modal-backdrop" data-close-modal="edit-modal"></div>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 id="edit-modal-title">Edit Learning Material</h3>
+                <button type="button" class="icon-btn" data-close-modal="edit-modal" aria-label="Close modal">&times;</button>
+            </div>
+            <form id="edit-material-form" class="modal-body">
+                <input type="hidden" id="edit-mat-id" />
+                <div class="form-group">
+                    <label for="edit-mat-title">Title *</label>
+                    <input type="text" id="edit-mat-title" required />
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label for="edit-mat-subject">Subject *</label>
+                        <select id="edit-mat-subject" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-mat-grade">Grade / Batch *</label>
+                        <input type="text" id="edit-mat-grade" required />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-mat-topic">Unit / Topic</label>
+                    <input type="text" id="edit-mat-topic" />
+                </div>
+                <div class="form-group">
+                    <label for="edit-mat-description">Description</label>
+                    <textarea id="edit-mat-description" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" data-close-modal="edit-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script defer src="js/firebase-config.js"></script>
+    <script defer src="js/storage-service.js"></script>
+    <script defer src="js/app.js"></script>
+</body>
+</html>

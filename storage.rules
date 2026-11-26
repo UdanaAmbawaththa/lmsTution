@@ -1,0 +1,20 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Update the admin email below to match AUTH_ROLES.ADMIN_EMAILS in js/firebase-config.js
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == "admin@tuition.lms";
+    }
+
+    match /materials/{allPaths=**} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin() &&
+        request.resource.size < 25 * 1024 * 1024 &&
+        request.resource.contentType == "application/pdf";
+    }
+  }
+}
