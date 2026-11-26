@@ -116,7 +116,10 @@
             submitBtn.textContent = "Verifying...";
 
             try {
-                const user = await lmsService.loginStudent($("student-password").value);
+                const user = await lmsService.loginStudent(
+                    $("student-email").value,
+                    $("student-password").value
+                );
                 studentForm.reset();
                 await handleAuthenticatedUser(user);
                 showToast("Welcome to the Student Learning Portal!", "success");
@@ -169,7 +172,7 @@
             settingsInfo.innerHTML = `
                 <strong>Firebase Cloud Mode is Active</strong><br>
                 Authentication, Firestore database, and PDF Storage are connected to your Firebase project.
-                To change the Student Access Password, update the student user's password in your Firebase Authentication console.
+                Add individual student and admin accounts in Firebase Authentication &rarr; Users.
             `;
         } else {
             const creds = lmsService.getDemoPasswords();

@@ -281,7 +281,7 @@
             return new Error("Email/Password sign-in is not enabled yet in Firebase Authentication.");
         }
         if (code === "auth/user-not-found" || code === "auth/invalid-credential" || code === "auth/wrong-password") {
-            return new Error("Invalid password or user account not created in Firebase Authentication.");
+            return new Error("Invalid email or password, or user account not created in Firebase Authentication.");
         }
         if (code === "auth/operation-not-supported-in-this-environment") {
             return new Error("Firebase Auth requires http://localhost or https:// (cannot run directly from file://).");
@@ -329,7 +329,7 @@
                         uid: user.uid,
                         email: user.email,
                         role,
-                        displayName: role === "admin" ? "Administrator" : "Student"
+                        displayName: role === "admin" ? "Administrator" : user.email
                     });
                 });
             }
@@ -340,27 +340,32 @@
             return () => {};
         },
 
-        async loginStudent(password) {
+        async loginStudent(email, password) {
+            const cleanEmail = String(email || "").trim();
             const cleanPass = String(password || "");
-            if (!cleanPass) {
-                throw new Error("Please enter the student access password.");
+            if (!cleanEmail || !cleanPass) {
+                throw new Error("Please enter both student email and password.");
             }
 
             if (this.isFirebaseMode()) {
                 try {
                     const { auth, authMod } = await getFirebaseRuntime();
-                    const cred = await authMod.signInWithEmailAndPassword(
-                        auth,
-                        LMS.AUTH_ROLES.STUDENT_AUTH_EMAIL,
-                        cleanPass
-                    );
+                    const cred = await authMod.signInWithEmailAndPassword(auth, cleanEmail, cleanPass);
+                    const role = resolveRoleFromEmail(cred.user.email);
+                    if (role === "admin") {
+                        await authMod.signOut(auth);
+                        throw new Error("Please use the Admin Login tab for administrator accounts.");
+                    }
                     return {
                         uid: cred.user.uid,
                         email: cred.user.email,
                         role: "student",
-                        displayName: "Student"
+                        displayName: cred.user.email
                     };
                 } catch (err) {
+                    if (err?.message === "Please use the Admin Login tab for administrator accounts.") {
+                        throw err;
+                    }
                     throw formatFirebaseError(err, "Student authentication failed.");
                 }
             }
@@ -371,9 +376,9 @@
             }
             const session = {
                 uid: "demo-student",
-                email: LMS.AUTH_ROLES.STUDENT_AUTH_EMAIL,
+                email: cleanEmail,
                 role: "student",
-                displayName: "Student"
+                displayName: cleanEmail
             };
             storageSet(LOCAL_KEYS.SESSION, JSON.stringify(session));
             return session;

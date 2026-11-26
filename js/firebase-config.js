@@ -5,13 +5,12 @@
  *
  * Setup checklist in Firebase Console (https://console.firebase.google.com/project/tution-lms-cae5a):
  * 1. Authentication -> Sign-in method -> Enable "Email/Password".
- * 2. Authentication -> Users -> Add two users:
- *    - Admin user:   admin@tuition.lms  (with your chosen Admin password)
- *    - Student user: student@tuition.lms (with your chosen Student Access password)
- *      Students only enter the password in the UI; the app pairs it with STUDENT_AUTH_EMAIL.
+ * 2. Authentication -> Users -> Add users:
+ *    - Admin users:   Any email listed in ADMIN_EMAILS below
+ *    - Student users: Any other user created in Firebase Authentication -> Users
  * 3. Firestore Database -> Create database -> Publish rules from firestore.rules.
  * 4. Storage -> Get started (if uploading PDF files directly) -> Publish rules from storage.rules.
- * 5. Serve over http://localhost or https:// (e.g. Firebase Hosting) for Firebase Auth.
+ * 5. Serve over http://localhost or https:// (e.g. GitHub Pages / Firebase Hosting) for Firebase Auth.
  */
 
 window.TuitionLMS = window.TuitionLMS || {};
@@ -29,11 +28,13 @@ window.TuitionLMS.FIREBASE_CONFIG = {
 /**
  * Role mapping for Firebase Authentication:
  * - ADMIN_EMAILS: Users allowed to access BOTH Admin Panel & Student Panel.
- * - STUDENT_AUTH_EMAIL: Hidden service email paired with the student-only password.
+ * - Any other authenticated Firebase user is treated as a Student.
  */
 window.TuitionLMS.AUTH_ROLES = {
-    ADMIN_EMAILS: ["admin@tuition.lms"],
-    STUDENT_AUTH_EMAIL: "student@tuition.lms"
+    ADMIN_EMAILS: [
+        "admin@tuition.lms",
+        "udana123@gmail.com"
+    ]
 };
 
 /**
